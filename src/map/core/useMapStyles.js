@@ -18,7 +18,7 @@ const styleCustom = ({ tiles, minZoom, maxZoom, attribution }) => {
     sources: {
       custom: source,
     },
-    glyphs: 'https://tiles.openfreemap.org/map/fonts/{fontstack}/{range}.pbf',
+    glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
     layers: [{
       id: 'custom',
       type: 'raster',
