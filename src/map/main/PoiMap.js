@@ -56,7 +56,7 @@ const PoiMap = () => {
           'text-anchor': 'bottom',
           'text-offset': [0, -0.5],
           'text-font': findFonts(map),
-          'text-size': 12,
+          'text-size': 14,
         },
         paint: {
           'text-halo-color': 'white',

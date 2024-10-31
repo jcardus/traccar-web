@@ -89,7 +89,7 @@ export const geometryToArea = (geometry) => stringify(reverseCoordinates(geometr
 export const findFonts = (map) => {
   const { glyphs } = map.getStyle();
   if (glyphs.startsWith('https://tiles.openfreemap.org')) {
-    return ['Noto Sans Regular'];
+    return ['Noto Sans Bold'];
   }
   return ['Open Sans Regular', 'Arial Unicode MS Regular'];
 };

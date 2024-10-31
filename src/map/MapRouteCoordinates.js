@@ -51,7 +51,7 @@ const MapRouteCoordinates = ({ name, coordinates, deviceId }) => {
       layout: {
         'text-field': '{name}',
         'text-font': findFonts(map),
-        'text-size': 12,
+        'text-size': 14,
       },
       paint: {
         'text-halo-color': 'white',

@@ -36,7 +36,7 @@ const MapMarkers = ({ markers, showTitles }) => {
           'text-anchor': 'bottom',
           'text-offset': [0, -2 * iconScale],
           'text-font': findFonts(map),
-          'text-size': 12,
+          'text-size': 14,
         },
         paint: {
           'text-halo-color': 'white',

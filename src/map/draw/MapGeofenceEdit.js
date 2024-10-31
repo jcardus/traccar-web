@@ -39,7 +39,7 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
       layout: {
         'text-field': '{user_name}',
         'text-font': findFonts(map),
-        'text-size': 12,
+        'text-size': 14,
       },
       paint: {
         'text-halo-color': 'white',
