@@ -15,7 +15,7 @@ export class LegendControl {
     this.map = map;
     // Create the control container
     this.controlContainer = document.createElement('div');
-    this.controlContainer.className = 'maplibregl-ctrl-group maplibregl-ctrl';
+    this.controlContainer.className = 'maplibregl-ctrl';
 
     if (this.positions.length && this.maxSpeed) {
       this.controlContainer.appendChild(this.createSpeedLegend(this.minSpeed, this.maxSpeed, this.t));
