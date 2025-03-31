@@ -47,14 +47,10 @@ const RouteReportPage = () => {
 
   const handleSubmit = useCatch(async ({ deviceIds, from, to, type }) => {
     const query = new URLSearchParams({ from, to });
-    deviceIds.forEach((deviceId) => {
-      if (Number.isInteger(deviceId)) {
-        query.append('deviceId', deviceId)
-      } else {
-        Sentry.captureMessage(`Invalid deviceId ${deviceId}`, "warning");
-      }
-    });
-    if (type === 'mail') {
+    deviceIds.forEach((deviceId) => query.append('deviceId', deviceId));
+    if (type === 'export') {
+      window.location.assign(`/api/reports/route/xlsx?${query.toString()}`);
+    } else if (type === 'mail') {
       const response = await fetch(`/api/reports/route/mail?${query.toString()}`);
       if (!response.ok) {
         throw Error(await response.text());
