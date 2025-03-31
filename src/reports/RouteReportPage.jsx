@@ -48,9 +48,7 @@ const RouteReportPage = () => {
   const handleSubmit = useCatch(async ({ deviceIds, from, to, type }) => {
     const query = new URLSearchParams({ from, to });
     deviceIds.forEach((deviceId) => query.append('deviceId', deviceId));
-    if (type === 'export') {
-      window.location.assign(`/api/reports/route/xlsx?${query.toString()}`);
-    } else if (type === 'mail') {
+    if (type === 'mail') {
       const response = await fetch(`/api/reports/route/mail?${query.toString()}`);
       if (!response.ok) {
         throw Error(await response.text());
