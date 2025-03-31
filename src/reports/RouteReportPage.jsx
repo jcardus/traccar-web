@@ -24,7 +24,6 @@ import MapCamera from '../map/MapCamera';
 import MapGeofence from '../map/MapGeofence';
 import scheduleReport from './common/scheduleReport';
 import MapScale from '../map/MapScale';
-import * as Sentry from "@sentry/react";
 import { utils, writeFileXLSX } from 'xlsx';
 
 const RouteReportPage = () => {
