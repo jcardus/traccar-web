@@ -36,16 +36,20 @@
         })
         map.addControl(new maplibregl.NavigationControl());
         map.once("load", () => {
-            for (const [id, source] of Object.entries(structuredContent.sources || {})) {
-                map.addSource(id, source);
-            }
             for (const layer of structuredContent.layers || []) {
-                map.addLayer(layer)
+                const source = {type: "geojson", data: layer.data};
+                map.addSource(layer.id, source);
+                map.addLayer({...layer, source: layer.id});
             }
         });
         for (const marker of structuredContent.markers || []) {
-            const m = new maplibregl.Marker({color: marker.color}).setLngLat(marker.position).addTo(map);
-            if (marker.label) m.setPopup(new maplibregl.Popup().setText(marker.label))
+            const element = document.createElement("div");
+            element.className = `marker marker-${marker.style || "pin"}`;
+            if (marker.style === "numbered") element.textContent = marker.label || "";
+            const m = new maplibregl.Marker({element, color: marker.color})
+                .setLngLat(marker.coordinates)
+                .addTo(map);
+            if (marker.popup) m.setPopup(new maplibregl.Popup().setText(marker.popup));
         }
     }
     app.onhostcontextchanged = () => {
