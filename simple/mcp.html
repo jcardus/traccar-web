@@ -11,16 +11,18 @@
             width: 100%;
             height: 480px
         }
-        .marker-numbered {
-            width: 22px;
-            height: 22px;
+        /* Circle for short labels, pill for longer ones */
+        .marker-badge {
+            box-sizing: border-box;
+            min-width: 28px;
+            padding: 0 7px;
             border: 2px solid #fff;
-            border-radius: 50%;
+            border-radius: 14px;
             color: #fff;
-            font: bold 11px/22px sans-serif;
+            font: bold 13px/24px sans-serif;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px #0006;
         }
     </style>
 </head>
@@ -37,7 +39,6 @@
     maplibregl.setWorkerUrl(URL.createObjectURL(workerBlob));
 
     const app = new App({name: "Traccar", version: "1.0.0"});
-    const colors = {start: "#2e7d32", end: "#d32f2f"};
     let map;
 
     function extend(bounds, value) {
@@ -48,15 +49,18 @@
     }
 
     app.ontoolresult = ({structuredContent}) => {
-        const {layers = [], markers = []} = structuredContent;
+        const {style = "liberty", layers = [], markers = []} = structuredContent;
         const bounds = new maplibregl.LngLatBounds();
         layers.forEach(layer => extend(bounds, layer.data));
         markers.forEach(marker => extend(bounds, marker.coordinates));
 
         map?.remove();
-        map = new maplibregl.Map({container: "map", style: "https://tiles.openfreemap.org/styles/liberty"});
+        map = new maplibregl.Map({
+            container: "map",
+            style: `https://tiles.openfreemap.org/styles/${style}`,
+            ...(!bounds.isEmpty() && {bounds, fitBoundsOptions: {padding: 50}})
+        });
         map.addControl(new maplibregl.NavigationControl());
-        if (!bounds.isEmpty()) map.fitBounds(bounds, {padding: 50});
 
         map.once("load", () => layers.forEach(({data, ...layer}, index) => {
             const id = layer.id || `layer-${index}`;
@@ -65,25 +69,25 @@
         }));
 
         for (const marker of markers) {
-            const color = marker.color || colors[marker.style] || "#3bb2d0";
+            const color = marker.color
             let element;
-            if (marker.style === "numbered") {
+            if (marker.style === "text") {
                 element = document.createElement("div");
-                element.className = "marker-numbered";
+                element.className = "marker-badge";
                 element.style.background = color;
                 element.textContent = marker.label || "";
             }
-            const popup = [marker.label, marker.popup].filter(Boolean).join(" — ");
             const m = new maplibregl.Marker({color, element}).setLngLat(marker.coordinates).addTo(map);
-            if (popup) m.setPopup(new maplibregl.Popup({offset: 25}).setText(popup));
+            if (!element && marker.label) m.setPopup(new maplibregl.Popup({offset: 25}).setText(marker.label));
         }
     };
-
+    window.ontoolresult = app.ontoolresult;
     app.onhostcontextchanged = () => {
         document.getElementById('map').style.height = app.getHostContext()?.displayMode === "fullscreen" ? "100vh" : "480px";
-        setTimeout(() => map?.resize(), 100);
+        map?.resize();
     };
-    await app.connect();
+
+    await app.connect()
 </script>
 </body>
 </html>
