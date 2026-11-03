@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.16.0/dist/maplibre-gl.css">
+    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.16.0/dist/maplibre-gl.mjs">
+    <style>
+        html, body, #map {
+            margin: 0;
+            width: 100%;
+            height: 480px
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script type="module">
+    import {App} from "https://cdn.jsdelivr.net/npm/@modelcontextprotocol/ext-apps@2.0.4/dist/src/app-with-deps.js";
+    const url = document.querySelector('link[rel="modulepreload"]')?.href;
+    const maplibregl = await import(url);
+    // Hosts allow blob workers and block external worker origins. Register a
+    // local Blob URL that imports the worker module through script-src.
+    const workerText = await fetch(url.replace(/maplibre-gl\.mjs$/, "maplibre-gl-worker.mjs")).then(response => response.text());
+    const workerBlob = new Blob([workerText], { type: "text/javascript" });
+    maplibregl.setWorkerUrl(URL.createObjectURL(workerBlob));
+
+    const app = new App({name: "Traccar", version: "1.0.0"});
+    const mapEl = document.getElementById('map');
+    let map;
+    app.ontoolresult = async (data) => {
+        map?.remove();
+        map = new maplibregl.Map({
+            container: 'map',
+            style: data.style || 'https://tiles.openfreemap.org/styles/liberty',
+            bounds: data.bounds
+        })
+        map.addControl(new maplibregl.NavigationControl());
+        map.once("load", () => {
+            for (const [id, source] of Object.entries(data.sources || {})) {
+                map.addSource(id, source);
+            }
+            for (const layer of data.layers || []) {
+                map.addLayer(layer)
+            }
+        });
+        for (const marker of data.markers || []) {
+            const m = new maplibregl.Marker({color: marker.color}).setLngLat(marker.position).addTo(map);
+            if (marker.label) m.setPopup(new maplibregl.Popup().setText(marker.label))
+        }
+    }
+    app.onhostcontextchanged = () => {
+        mapEl.style.height = app.getHostContext()?.displayMode === "fullscreen" ? "100vh" : "480px";
+        map?.resize()
+    };
+    await app.connect();
+</script>
+</body>
+</html>
