@@ -27,29 +27,29 @@
 
     const app = new App({name: "Traccar", version: "1.0.0"});
     let map;
-    app.ontoolresult = async (data) => {
+    app.ontoolresult = async ({structuredContent}) => {
         map?.remove();
         map = new maplibregl.Map({
             container: 'map',
-            style: data.style || 'https://tiles.openfreemap.org/styles/liberty',
-            bounds: data.bounds
+            style: structuredContent.style || 'https://tiles.openfreemap.org/styles/liberty',
+            bounds: structuredContent.bounds
         })
         map.addControl(new maplibregl.NavigationControl());
         map.once("load", () => {
-            for (const [id, source] of Object.entries(data.sources || {})) {
+            for (const [id, source] of Object.entries(structuredContent.sources || {})) {
                 map.addSource(id, source);
             }
-            for (const layer of data.layers || []) {
+            for (const layer of structuredContent.layers || []) {
                 map.addLayer(layer)
             }
         });
-        for (const marker of data.markers || []) {
+        for (const marker of structuredContent.markers || []) {
             const m = new maplibregl.Marker({color: marker.color}).setLngLat(marker.position).addTo(map);
             if (marker.label) m.setPopup(new maplibregl.Popup().setText(marker.label))
         }
     }
     app.onhostcontextchanged = () => {
-        mapEl.style.height = app.getHostContext()?.displayMode === "fullscreen" ? "100vh" : "480px";
+        document.getElementById('map').style.height = app.getHostContext()?.displayMode === "fullscreen" ? "100vh" : "480px";
         map?.resize()
     };
     await app.connect();
