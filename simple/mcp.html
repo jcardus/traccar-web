@@ -26,7 +26,6 @@
     maplibregl.setWorkerUrl(URL.createObjectURL(workerBlob));
 
     const app = new App({name: "Traccar", version: "1.0.0"});
-    const mapEl = document.getElementById('map');
     let map;
     app.ontoolresult = async (data) => {
         map?.remove();
